@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .calculator:hover {
+            transform: scale(1.02);
+            transition: transform 0.3s ease;
+        }
+
+        .display {
+            background: #333;
+            color: #fff;
+            font-size: 2rem;
+            text-align: right;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn {
+            background: #f4f4f9;
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .operator {
+            background: #007bff;
+            color: white;
+        }
+
+        .operator:hover {
+            background: #0056b3;
+        }
+
+        .equal {
+            background: #28a745;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equal:hover {
+            background: #218838;
+        }
+
+        #history {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #historyList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .calculator.dark-mode {
+            background: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .display.dark-mode {
+            background: #222;
+            color: #0f0;
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn.dark-mode {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn.dark-mode:hover {
+            background: #444;
+        }
+
+        .operator.dark-mode {
+            background: #0056b3;
+        }
+
+        .equal.dark-mode {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <button class="btn" onclick="toggleDarkMode()">Dark Mode</button>
+        <div class="display" id="display">0</div>
+        <div id="realTimeResult"></div>
+        <div class="buttons">
+            <button class="btn" onclick="clearDisplay()">C</button>
+            <button class="btn" onclick="deleteLast()">DEL</button>
+            <button class="btn" onclick="appendOperator('%')">%</button>
+            <button class="btn operator" onclick="appendOperator('/')">/</button>
+            <button class="btn" onclick="appendNumber('7')">7</button>
+            <button class="btn" onclick="appendNumber('8')">8</button>
+            <button class="btn" onclick="appendNumber('9')">9</button>
+            <button class="btn operator" onclick="appendOperator('*')">*</button>
+            <button class="btn" onclick="appendNumber('4')">4</button>
+            <button class="btn" onclick="appendNumber('5')">5</button>
+            <button class="btn" onclick="appendNumber('6')">6</button>
+            <button class="btn operator" onclick="appendOperator('-')">-</button>
+            <button class="btn" onclick="appendNumber('1')">1</button>
+            <button class="btn" onclick="appendNumber('2')">2</button>
+            <button class="btn" onclick="appendNumber('3')">3</button>
+            <button class="btn operator" onclick="appendOperator('+')">+</button>
+            <button class="btn" onclick="appendNumber('0')">0</button>
+            <button class="btn" onclick="appendNumber('.')">.</button>
+            <button class="btn equal" onclick="calculate()">=</button>
+            <button class="btn" onclick="calculateSquareRoot()">√</button>
+            <button class="btn" onclick="calculateSquare()">x²</button>
+            <button class="btn" onclick="calculateSin()">sin</button>
+            <button class="btn" onclick="calculateCos()">cos</button>
+            <button class="btn" onclick="calculateTan()">tan</button>
+            <button class="btn" onclick="calculateLog()">log</button>
+            <button class="btn" onclick="calculateExp()">eˣ</button>
+            <button class="btn" onclick="memoryAdd()">M+</button>
+            <button class="btn" onclick="memoryRecall()">MR</button>
+            <button class="btn" onclick="memoryClear()">MC</button>
+        </div>
+        <div id="history">
+            <h3>History</h3>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+    <script>
+        let display = document.getElementById('display');
+        let memory = 0;
+
+        function updateDisplay(value) {
+            display.innerText = value;
+        }
+
+        function appendNumber(number) {
+            if (display.innerText === '0') {
+                updateDisplay(number);
+            } else {
+                updateDisplay(display.innerText + number);
+            }
+        }
+
+        function appendOperator(operator) {
+            if (!isNaN(display.innerText.slice(-1))) {
+                updateDisplay(display.innerText + operator);
+            }
+        }
+
+        function clearDisplay() {
+            updateDisplay('0');
+        }
+
+        function deleteLast() {
+            if (display.innerText.length > 1) {
+                updateDisplay(display.innerText.slice(0, -1));
+            } else {
+                updateDisplay('0');
+            }
+        }
+
+        function calculate() {
+            try {
+                const result = eval(display.innerText.replace(/%/g, '/100'));
+                addToHistory(display.innerText, result);
+                updateDisplay(result);
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function addToHistory(expression, result) {
+            const historyList = document.getElementById('historyList');
+            const historyItem = document.createElement('li');
+            historyItem.innerText = `${expression} = ${result}`;
+            historyItem.onclick = () => updateDisplay(result);
+            historyList.appendChild(historyItem);
+        }
+
+        function calculateSquareRoot() {
+            try {
+                updateDisplay(Math.sqrt(parseFloat(display.innerText)));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateSquare() {
+            try {
+                updateDisplay(Math.pow(parseFloat(display.innerText), 2));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateSin() {
+            try {
+                updateDisplay(Math.sin(toRadians(parseFloat(display.innerText))));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateCos() {
+            try {
+                updateDisplay(Math.cos(toRadians(parseFloat(display.innerText))));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateTan() {
+            try {
+                updateDisplay(Math.tan(toRadians(parseFloat(display.innerText))));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateLog() {
+            try {
+                updateDisplay(Math.log10(parseFloat(display.innerText)));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function calculateExp() {
+            try {
+                updateDisplay(Math.exp(parseFloat(display.innerText)));
+            } catch {
+                updateDisplay('Error');
+            }
+        }
+
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function memoryAdd() {
+            memory = parseFloat(display.innerText);
+            alert(`Memory stored: ${memory}`);
+        }
+
+        function memoryRecall() {
+            updateDisplay(memory.toString());
+        }
+
+        function memoryClear() {
+            memory = 0;
+            alert('Memory cleared');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.querySelector('.calculator').classList.toggle('dark-mode');
+            document.querySelector('.display').classList.toggle('dark-mode');
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.toggle('dark-mode'));
+        }
+    </script>
+</body>
+</html>
